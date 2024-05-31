@@ -26,3 +26,30 @@ class ModelTestCase(TestCase):
         self.assertEqual(self.recipe.instructions, 'Test Instructions')
         self.assertEqual(self.recipe.ingredients, 'Test Ingredients')
         self.assertEqual(self.recipe.category, self.category)
+
+class ViewTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.category = Category.objects.create(name='Test Category')
+        self.recipe = Recipe.objects.create(
+            title='Test Recipe',
+            description='Test Description',
+            instructions='Test Instructions',
+            ingredients='Test Ingredients',
+            category=self.category
+        )
+
+    def test_recipe_list_view(self):
+        response = self.client.get(reverse('main'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Test Recipe')
+
+    def test_category_list_view(self):
+        response = self.client.get(reverse('category_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Test Category')
+
+    def test_recipe_detail_view(self):
+        response = self.client.get(reverse('recipe_detail', args=[self.recipe.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Test Recipe')
